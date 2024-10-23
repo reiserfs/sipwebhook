@@ -51,6 +51,7 @@ ENV TOKEN_OHDEAR=ohdear_token
 # Expor as portas HTTP e HTTPS
 EXPOSE 80 443
 
+WORKDIR /home/webhook
 # Configuração de entrada do container
 CMD ["/bin/bash", "-c", "/home/webhook/start.sh"]
 
