@@ -7,7 +7,7 @@ if [ "$SSL_ENABLE" = "true" ]; then
 fi
 
 # Criar o arquivo config.conf
-{
+makeconfig() {
     echo "[auth]"
     for var in $(compgen -e | grep ^TOKEN_); do
         echo "${var,,} = ${!var}"
@@ -24,8 +24,9 @@ fi
     echo "[tts]"
     echo "language = $TTS_LANG"
     echo "voice = default"
-} > /home/webhook/config.conf
+}
 
+makeconfig > /home/webhook/app/config.conf
 # Iniciar Nginx
 nginx
 
