@@ -20,6 +20,7 @@ RUN mkdir -p /home/webhook
 
 # Copiar a aplicação Python para o container
 COPY app /home/webhook
+COPY start.sh /home/webhook
 
 # Criar um ambiente virtual e instalar bibliotecas Python necessárias
 RUN virtualenv /home/webhook/venv && \
