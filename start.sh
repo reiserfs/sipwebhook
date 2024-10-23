@@ -29,6 +29,8 @@ fi
 # Iniciar Nginx
 nginx
 
-# Iniciar a aplicação Python
-python3 /home/webhook/app/sip-webhook.py
+# Ativar o ambiente virtual
+source /home/webhook/app/venv/bin/activate
 
+# Executar o aplicativo Python
+python3 /home/webhook/app/sip-webhook.py
