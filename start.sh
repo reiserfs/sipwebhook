@@ -30,8 +30,5 @@ makeconfig > /home/webhook/app/config.conf
 # Iniciar Nginx
 nginx
 
-# Ativar o ambiente virtual
-source /home/webhook/app/venv/bin/activate
-
-# Executar o aplicativo Python
-python3 /home/webhook/app/sip-webhook.py
+# Ativar o ambiente virtual # Executar o aplicativo Python
+source /home/webhook/app/venv/bin/activate && python3 /home/webhook/app/sip-webhook.py
