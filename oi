@@ -1,0 +1,11 @@
+[auth]
+
+[sip]
+server_uri = 
+username = 
+password = 
+destination_number = 
+
+[tts]
+language = 
+voice = default
