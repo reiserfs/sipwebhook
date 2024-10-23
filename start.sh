@@ -30,5 +30,5 @@ fi
 nginx
 
 # Iniciar a aplicação Python
-python3 /home/webhook/app/main.py
+python3 /home/webhook/app/sip-webhook.py
 
