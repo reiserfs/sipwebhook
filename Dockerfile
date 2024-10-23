@@ -16,16 +16,16 @@ RUN apk update && \
         py3-virtualenv
 
 # Criar um diretório para a aplicação
-RUN mkdir -p /home/webhook
+RUN mkdir -p /home/webhook/app
 
 # Copiar a aplicação Python para o container
-COPY app /home/webhook
+COPY app /home/webhook/app
 COPY start.sh /home/webhook
 
 # Criar um ambiente virtual e instalar bibliotecas Python necessárias
-RUN virtualenv /home/webhook/venv && \
-    /home/webhook/venv/bin/pip install --upgrade pip && \
-    /home/webhook/venv/bin/pip install flask pyttsx3 configparser
+RUN virtualenv /home/webhook/app/venv && \
+    /home/webhook/app/venv/bin/pip install --upgrade pip && \
+    /home/webhook/app/venv/bin/pip install flask pyttsx3 configparser
 
 # Configurar Nginx
 RUN mkdir -p /run/nginx
