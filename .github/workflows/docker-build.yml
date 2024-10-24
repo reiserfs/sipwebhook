@@ -23,6 +23,7 @@ jobs:
     - name: Get current version
       id: get_version
       run: |
+        pwd
         git describe --tags
         VERSION=$(git describe --tags --abbrev=0 || echo "v0.1.0")  # Define uma versão padrão se não houver tags
         echo "Current version is $VERSION"
