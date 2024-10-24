@@ -51,6 +51,7 @@ jobs:
     - name: Push Docker image
       run: |
         docker push ghcr.io/${{ github.repository }}/sip-webhook:${{ env.NEW_VERSION }}
+        docker tag ghcr.io/${{ github.repository }}/sip-webhook:${{ env.NEW_VERSION }} ghcr.io/${{ github.repository }}/sip-webhook:latest 
         docker push ghcr.io/${{ github.repository }}/sip-webhook:latest
 
     - name: Configure Git identity
