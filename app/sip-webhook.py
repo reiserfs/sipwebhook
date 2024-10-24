@@ -12,6 +12,7 @@ import datetime
 
 # Configuração do Flask
 app = Flask(__name__)
+app.config['DEBUG'] = True
 swagger_config = {
     "swagger": "2.0",
     "info": {
