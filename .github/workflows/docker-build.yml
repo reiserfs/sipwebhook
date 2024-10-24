@@ -1,0 +1,52 @@
+name: Build and Publish Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Get current version
+      id: get_version
+      run: |
+        VERSION=$(git describe --tags --abbrev=0)
+        echo "Current version is $VERSION"
+        echo "::set-output name=version::$VERSION"
+
+    - name: Increment version
+      id: increment_version
+      run: |
+        IFS='.' read -ra ADDR <<< "${{ steps.get_version.outputs.version }}"
+        MAJOR=${ADDR[0]}
+        MINOR=${ADDR[1]}
+        PATCH=${ADDR[2]}
+        NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+        echo "New version will be $NEW_VERSION"
+        echo "::set-output name=new_version::$NEW_VERSION"
+
+    - name: Build Docker image
+      run: |
+        docker build -t ghcr.io/${{ github.repository }}/sip-webhook:${{ steps.increment_version.outputs.new_version }} .
+
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+
+    - name: Push Docker image
+      run: |
+        docker push ghcr.io/${{ github.repository }}/sip-webhook:${{ steps.increment_version.outputs.new_version }}
+
+    - name: Create a Git tag
+      run: |
+        git tag -a "v${{ steps.increment_version.outputs.new_version }}" -m "Release version ${{ steps.increment_version.outputs.new_version }}"
+        git push origin "v${{ steps.increment_version.outputs.new_version }}"
+
