@@ -51,6 +51,7 @@ jobs:
     - name: Push Docker image
       run: |
         docker push ghcr.io/${{ github.repository }}/sip-webhook:${{ env.NEW_VERSION }}
+        docker push ghcr.io/${{ github.repository }}/sip-webhook:latest
 
     - name: Configure Git identity
       run: |
@@ -60,4 +61,4 @@ jobs:
     - name: Create a Git tag
       run: |
         git tag -a "${{ env.NEW_VERSION}}" -m "Release version ${{ env.NEW_VERSION }}"
-        git push origin "${{ env.NEW_VERSION }}"
+        git push origin "${{ env.NEW_VERSION }}"      
