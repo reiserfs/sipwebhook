@@ -33,7 +33,7 @@ Esta aplicação permite gerenciar webhooks e realizar chamadas SIP automaticame
 
 3. Configure o arquivo config.conf:
 
-O arquivo `config.conf` deve conter as seções para autenticação (`auth`), configuração do servidor SIP (`sip`), e TTS (`tts`). Exemplo:
+    O arquivo `config.conf` deve conter as seções para autenticação (`auth`), configuração do servidor SIP (`sip`), e TTS (`tts`). Exemplo:
     
     ```ini
     [auth]
