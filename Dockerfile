@@ -26,7 +26,7 @@ COPY start.sh /home/webhook
 # Criar um ambiente virtual e instalar bibliotecas Python necessárias
 RUN virtualenv /home/webhook/app/venv && \
     /home/webhook/app/venv/bin/pip install --upgrade pip && \
-    /home/webhook/app/venv/bin/pip install flask pyttsx3 configparser
+    /home/webhook/app/venv/bin/pip install flask pyttsx3 configparser gunicorn
 
 # Configurar Nginx
 RUN mkdir -p /run/nginx
