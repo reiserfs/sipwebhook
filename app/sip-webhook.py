@@ -12,7 +12,32 @@ import datetime
 
 # Configuração do Flask
 app = Flask(__name__)
-swagger = Swagger(app)
+swagger_config = {
+    "swagger": "2.0",
+    "info": {
+        "title": "SIP Webhook API",
+        "description": "API para gerenciar webhooks e chamadas SIP",
+        "version": "1.0.0"
+    },
+    "host": "localhost:5000",  # Altere conforme necessário
+    "basePath": "/",
+    "schemes": [
+        "http"
+    ],
+    "specs": [
+        {
+            "endpoint": 'apispec_1',
+            "route": '/apispec_1.json',
+            "rule_filter": lambda rule: True,  # Todos os endpoints são documentados
+            "model_filter": lambda tag: True,  # Todos os modelos são documentados
+        }
+    ],
+    "static_url_path": "/flasgger_static",
+    "swagger_ui": True,
+    "specs_route": "/apidocs/",
+    "headers": []  # Adicionando uma lista vazia para evitar o erro
+}
+Swagger(app, config=swagger_config)
 
 # Carregar configurações do arquivo config.conf
 config = configparser.ConfigParser()
