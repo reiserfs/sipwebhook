@@ -22,16 +22,19 @@ Esta aplicação permite gerenciar webhooks e realizar chamadas SIP automaticame
 
    ```bash
    git clone https://github.com/seu_usuario/sip-webhook.git
-   cd sip-webhook```
+   cd sip-webhook
+   ```
 
 2. Instale as dependências:
 
    ```bash
-   pip install -r requirements.txt```
+   pip install -r requirements.txt
+   ```
 
 3. Configure o arquivo config.conf:
 
 O arquivo `config.conf` deve conter as seções para autenticação (`auth`), configuração do servidor SIP (`sip`), e TTS (`tts`). Exemplo:
+    
     ```ini
     [auth]
     uptime_kuma_token = SEU_TOKEN_UPTIME_KUMA
@@ -46,7 +49,8 @@ O arquivo `config.conf` deve conter as seções para autenticação (`auth`), co
     sip_destination = destination
 
     [tts]
-    lang = pt-br```
+    lang = pt-br
+    ```
 
 4. Execute a aplicação:
 
