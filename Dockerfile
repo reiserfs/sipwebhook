@@ -32,7 +32,7 @@ RUN virtualenv /home/webhook/app/venv && \
 RUN mkdir -p /run/nginx
 
 # Copiar a configuração do Nginx
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
 
 # Permitir que o Nginx use pastas necessárias
 RUN chown -R nginx:nginx /home/webhook
