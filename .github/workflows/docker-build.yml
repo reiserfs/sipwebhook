@@ -23,7 +23,7 @@ jobs:
     - name: Get current version
       id: get_version
       run: |
-        VERSION=$(git describe --tags --abbrev=0 || echo "v0.1.0")  # Define uma versão padrão se não houver tags
+        VERSION=$(git describe --tags --abbrev=0 || echo "0.1.0")  # Define uma versão padrão se não houver tags
         echo "Current version is $VERSION"
         echo "::set-output name=version::$VERSION"
 
@@ -55,8 +55,6 @@ jobs:
         git config --global user.name "kmreiserfs"  # Substitua pelo seu nome
 
     - name: Create a Git tag
-      env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Use seu token pessoal aqui
       run: |
         git tag -a "v${{ steps.increment_version.outputs.new_version }}" -m "Release version ${{ steps.increment_version.outputs.new_version }}"
-        git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} "v${{ steps.increment_version.outputs.new_version }}"
+        git push https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/${{ github.repository }} "v${{ steps.increment_version.outputs.new_version }}"
