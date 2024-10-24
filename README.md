@@ -54,9 +54,9 @@ Esta aplicação permite gerenciar webhooks e realizar chamadas SIP automaticame
 
 4. Execute a aplicação:
 
-``` bash
-gunicorn -w 4 -b 0.0.0.0:5000 sip-webhook:app
-```
+    ``` bash
+    gunicorn -w 4 -b 0.0.0.0:5000 sip-webhook:app
+    ```
 
 ## Configurando Variáveis de Ambiente no Container
 
