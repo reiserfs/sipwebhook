@@ -1,20 +1,20 @@
 # SIP Webhook Application
 
-Esta aplicação permite gerenciar webhooks e realizar chamadas SIP automaticamente com base em notificações recebidas de serviços como Uptime Kuma, Grafana e Oh Dear. Ela utiliza Flask para a API web e PJSUA para realizar as chamadas SIP.
+This application allows you to manage webhooks and automatically make SIP calls based on notifications received from services like Uptime Kuma, Grafana, and Oh Dear. It uses Flask for the web API and PJSUA to make SIP calls.
 
-## Funcionalidades
+## Features
 
-- Receber notificações via Webhook de Uptime Kuma, Grafana e Oh Dear.
-- Realizar chamadas SIP com mensagens de texto sintetizado (TTS).
-- Documentação automática da API utilizando Swagger.
-- Monitoramento do status das notificações e filas de chamadas.
+- Receive notifications via Webhook from Uptime Kuma, Grafana and Oh Dear.
+- Make SIP calls with synthesized text messages (TTS).
+- Automatic API documentation using Swagger.
+- Monitoring the status of notifications and call queues.
 
-## Configuração
+## Configuration
 
-### Pré-requisitos
+### Prerequisites
 
 - Python 3.11+
-- Bibliotecas instaladas a partir do `requirements.txt`
+- Libraries installed from `requirements.txt`
 
 ### Instalação
 
