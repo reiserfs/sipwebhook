@@ -41,4 +41,4 @@ nginx
 source /home/webhook/app/venv/bin/activate
 
 # Executar o aplicativo Python
-cd /home/webhook/app/ && gunicorn -w 4 -b 127.0.0.1:5000 sip-webhook:app
+cd /home/webhook/app/ && gunicorn -w 4 -b 0.0.0.0:5000 sip-webhook:app
