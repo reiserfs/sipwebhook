@@ -11,9 +11,10 @@ RUN apk update && \
         python3 \
         py3-pip \
         bash \
-	pjsua \
-	pjproject \
-        py3-virtualenv
+	    pjsua \
+	    pjproject \
+        py3-virtualenv \
+        gettext
 
 # Criar um diretório para a aplicação
 RUN mkdir -p /home/webhook/app

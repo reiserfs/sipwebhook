@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # Configurar o Nginx
+
+envsubst '${SSL_ENABLE} ${URL_DOMAIN}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+
 if [ "$SSL_ENABLE" = "true" ]; then
     # Gerar certificado SSL com Certbot
     certbot --nginx -d $URL_DOMAIN --email $SSL_CERTBOT_MAIL --agree-tos --non-interactive
