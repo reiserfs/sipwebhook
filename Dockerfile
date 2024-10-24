@@ -32,16 +32,14 @@ RUN virtualenv /home/webhook/app/venv && \
 RUN mkdir -p /run/nginx
 
 # Copiar a configuração do Nginx
-COPY nginx.conf.ssl /etc/nginx/nginx.conf.ssl
-COPY nginx.conf.no-ssl /etc/nginx/nginx.conf.no-ssl
+COPY nginx.conf.template /etc/nginx/nginx.conf.template
 
 # Permitir que o Nginx use pastas necessárias
 RUN chown -R nginx:nginx /home/webhook
 
 # Definir variáveis de ambiente
 ENV URL_DOMAIN=example.com
-ENV SSL_ENABLE=false
-ENV SSL_CERTBOT_MAIL=your-email@example.com
+ENV HTTP_PORT=80
 ENV SIP_SERVER=sip.example.com
 ENV SIP_USERNAME=username
 ENV SIP_PASSWORD=password

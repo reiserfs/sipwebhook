@@ -2,16 +2,8 @@
 
 # Configurar o Nginx
 
-# Substituir variáveis de ambiente no arquivo de configuração do Nginx
-if [ "$SSL_ENABLE" = "true" ]; then
-    # Adicionar configuração de SSL ao nginx.conf
-    envsubst '${URL_DOMAIN}' < /etc/nginx/nginx.conf.ssl > /etc/nginx/nginx.conf
-    # Gerar certificado SSL com Certbot
-    certbot --nginx -d $URL_DOMAIN --email $SSL_CERTBOT_MAIL --agree-tos --non-interactive    
-else
-    # Usar a configuração básica sem SSL
-    envsubst '${URL_DOMAIN}' < /etc/nginx/nginx.conf.no-ssl > /etc/nginx/nginx.conf
-fi
+envsubst '${URL_DOMAIN} ${HTTP_PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
+
 
 # Criar o arquivo config.conf
 makeconfig() {
