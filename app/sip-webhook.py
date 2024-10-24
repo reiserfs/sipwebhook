@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flasgger import Swagger
 import threading
 import time
 import queue
@@ -11,6 +12,7 @@ import datetime
 
 # Configuração do Flask
 app = Flask(__name__)
+swagger = Swagger(app)
 
 # Carregar configurações do arquivo config.conf
 config = configparser.ConfigParser()
@@ -72,6 +74,28 @@ def process_call_queue():
 # Função para lidar com requisições de webhook
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    """
+    Receber notificações e adicionar mensagem à fila.
+    ---
+    tags:
+      - Webhook
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: Token de autenticação
+      - name: message
+        in: body
+        type: string
+        required: true
+        description: Mensagem a ser adicionada à fila
+    responses:
+      200:
+        description: Mensagem adicionada com sucesso
+      403:
+        description: Token inválido ou mensagem ausente
+    """    
     data = request.json
     token = request.headers.get('Authorization')
     message = data.get('message')
@@ -86,6 +110,32 @@ def webhook():
 # Rota para verificar o estado da fila
 @app.route("/status", methods=["POST"])
 def status():
+    """
+    Verificar o estado da fila.
+    ---
+    tags:
+      - Status
+    parameters:
+      - name: Authorization
+        in: header
+        type: string
+        required: true
+        description: Token de autenticação
+    responses:
+      200:
+        description: Estado da fila
+        schema:
+          type: object
+          properties:
+            queue_size:
+              type: integer
+            destination_number:
+              type: string
+            time_remaining:
+              type: string
+      401:
+        description: Token inválido
+    """    
     token = request.headers.get("Authorization")
     if token not in config['auth'].values():
         return jsonify({"error": "Token inválido"}), 401
