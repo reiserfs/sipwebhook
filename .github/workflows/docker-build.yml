@@ -23,31 +23,33 @@ jobs:
     - name: Get current version
       id: get_version
       run: |
-        VERSION=$(git describe --tags --abbrev=0 || echo "0.1.0")  # Define uma versão padrão se não houver tags
+        git describe --tags
+        VERSION=$(git describe --tags --abbrev=0 || echo "v0.1.0")  # Define uma versão padrão se não houver tags
         echo "Current version is $VERSION"
-        echo "::set-output name=version::$VERSION"
+        echo "VERSION=$VERSION" >> $GITHUB_ENV  # Usando arquivo de ambiente
 
     - name: Increment version
       id: increment_version
       run: |
-        IFS='.' read -ra ADDR <<< "${{ steps.get_version.outputs.version }}"
+        IFS='.' read -ra ADDR <<< "${VERSION/v/}"  # Remove 'v' para o split
         MAJOR=${ADDR[0]}
         MINOR=${ADDR[1]}
         PATCH=${ADDR[2]}
-        NEW_VERSION="$MAJOR.$MINOR.$((PATCH + 1))"
+        NEW_VERSION="v$MAJOR.$MINOR.$((PATCH + 1))"  # Adiciona 'v' de volta
         echo "New version will be $NEW_VERSION"
-        echo "::set-output name=new_version::$NEW_VERSION"
+        echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV  # Usando arquivo de ambiente
+
 
     - name: Build Docker image
       run: |
-        docker build -t ghcr.io/${{ github.repository }}/sip-webhook:${{ steps.increment_version.outputs.new_version }} .
+        docker build -t ghcr.io/${{ github.repository }}/sip-webhook:${{ env.NEW_VERSION}} .
 
     - name: Log in to GitHub Container Registry
       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
     - name: Push Docker image
       run: |
-        docker push ghcr.io/${{ github.repository }}/sip-webhook:${{ steps.increment_version.outputs.new_version }}
+        docker push ghcr.io/${{ github.repository }}/sip-webhook:${{ env.NEW_VERSION }}
 
     - name: Configure Git identity
       run: |
@@ -56,5 +58,5 @@ jobs:
 
     - name: Create a Git tag
       run: |
-        git tag -a "v${{ steps.increment_version.outputs.new_version }}" -m "Release version ${{ steps.increment_version.outputs.new_version }}"
-        git push origin "v${{ steps.increment_version.outputs.new_version }}"
+        git tag -a "v${{ env.NEW_VERSION}}" -m "Release version ${{ env.NEW_VERSION }}"
+        git push origin "v${{ env.NEW_VERSION }}"
