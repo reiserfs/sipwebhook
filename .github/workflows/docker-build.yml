@@ -5,12 +5,13 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
     - name: Checkout repository
@@ -22,7 +23,7 @@ jobs:
     - name: Get current version
       id: get_version
       run: |
-        VERSION=$(git describe --tags --abbrev=0 || echo "v0.1.0")  # Define uma versão padrão se não houver tags
+        VERSION=$(git describe --tags --abbrev=0 || echo "0.1.0")  # Define uma versão padrão se não houver tags
         echo "Current version is $VERSION"
         echo "::set-output name=version::$VERSION"
 
@@ -47,6 +48,11 @@ jobs:
     - name: Push Docker image
       run: |
         docker push ghcr.io/${{ github.repository }}/sip-webhook:${{ steps.increment_version.outputs.new_version }}
+
+    - name: Configure Git identity
+      run: |
+        git config --global user.email "actions@github.com"
+        git config --global user.name "GitHub Actions"
 
     - name: Create a Git tag
       run: |
