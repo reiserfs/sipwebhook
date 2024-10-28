@@ -9,6 +9,7 @@ import os
 import tempfile
 import pyttsx3
 import datetime
+import logging
 
 # Configuração do Flask
 app = Flask(__name__)
@@ -132,8 +133,10 @@ def webhook():
     if token in config['auth'].values() and message:
         # Adicionar a mensagem à fila
         message_queue.put(message)
+        app.logger.info('status: Mensagem adicionada à fila')
         return jsonify({'status': 'Mensagem adicionada à fila'}), 200
     else:
+        app.logger.error('error: Token inválido ou mensagem ausente')
         return jsonify({'error': 'Token inválido ou mensagem ausente'}), 403
 
 # Rota para verificar o estado da fila
@@ -191,7 +194,12 @@ call_thread.start()
 
 # Iniciar o servidor Flask
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
     gunicorn_logger = logging.getLogger('gunicorn.error')
     app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)    
+    app.logger.setLevel(gunicorn_logger.level)
+    app.logger.debug('this is a DEBUG message')
+    app.logger.info('this is an INFO message')
+    app.logger.warning('this is a WARNING message')
+    app.logger.error('this is an ERROR message')
+    app.logger.critical('this is a CRITICAL message')    
+    app.run(host='0.0.0.0', port=5000)
