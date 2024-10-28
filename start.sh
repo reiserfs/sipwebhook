@@ -4,7 +4,6 @@
 
 envsubst '${URL_DOMAIN} ${HTTP_PORT}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
-
 # Criar o arquivo config.conf
 makeconfig() {
     echo "[auth]"
@@ -23,6 +22,10 @@ makeconfig() {
     echo "[tts]"
     echo "language = $TTS_LANG"
     echo "voice = default"
+
+    echo ""
+    echo "[queue]"
+    echo "time = ${QUEUE_TIME:=15}"
 }
 
 makeconfig > /home/webhook/app/config.conf
