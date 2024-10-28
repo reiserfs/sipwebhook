@@ -12,6 +12,7 @@ RUN apk update && \
         py3-pip \
         bash \
 	    pjsua \
+        py3-pjsua \
 	    pjproject \
         py3-virtualenv \
         gettext \
