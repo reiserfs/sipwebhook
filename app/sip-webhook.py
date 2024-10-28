@@ -87,6 +87,7 @@ def process_call_queue():
 
             # Fazer a ligação e falar as mensagens
             tts_text = f"Você tem {len(messages)} mensagens para ouvir. " + " ".join(messages)
+            app.logger.debug(f"Msg: {tts_text}")
             audio_file = gerar_audio_tts(tts_text)
 
             # Executar o script para fazer a chamada
