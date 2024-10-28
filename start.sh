@@ -17,6 +17,7 @@ makeconfig() {
     echo "username = $SIP_USERNAME"
     echo "password = $SIP_PASSWORD"
     echo "destination_number = $SIP_DESTINATION"
+    echo "host_ip = ${HOST_IP:=$URL_DOMAIN}"
     
     echo ""
     echo "[tts]"
