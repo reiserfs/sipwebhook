@@ -20,7 +20,7 @@ audio_file = sys.argv[5]
 
 class MinhaConta(pj.Account):
     def onRegState(self, prm):
-        print("*** Estado de registro: " + prm.reason)
+        app.logger.info("*** Estado de registro: " + prm.reason)
 
 class MinhaChamada(pj.Call):
     def __init__(self, conta, audio_file):
@@ -30,15 +30,15 @@ class MinhaChamada(pj.Call):
 
     def onCallState(self, prm):
         ci = self.getInfo()
-        print(f"*** Estado da chamada: {ci.stateText} ({ci.lastReason})")
+        app.logger.info(f"*** Estado da chamada: {ci.stateText} ({ci.lastReason})")
         if ci.state == pj.PJSIP_INV_STATE_DISCONNECTED:
-            print("*** Chamada desconectada")
+            app.logger.info("*** Chamada desconectada")
 
     def onCallMediaState(self, prm):
         ci = self.getInfo()
 
         if ci.state == pj.PJSIP_INV_STATE_CONFIRMED:
-            print("*** Mídia de chamada ativa, iniciando reprodução do áudio")
+            app.logger.info("*** Mídia de chamada ativa, iniciando reprodução do áudio")
             try:
                 self.player = pj.AudioMediaPlayer()
                 self.player.createPlayer(self.audio_file, pj.PJMEDIA_FILE_NO_LOOP)
@@ -47,7 +47,7 @@ class MinhaChamada(pj.Call):
                 # Transmitir áudio do player para a chamada
                 self.player.startTransmit(call_media)
             except pj.Error as e:
-                print(f"Erro ao transmitir áudio: {e}")
+                app.logger.error(f"Erro ao transmitir áudio: {e}")
 
 ep = pj.Endpoint()
 try:
@@ -90,7 +90,7 @@ try:
 
     os.remove(audio_file)
 except pj.Error as e:
-    print(f"Erro PJSUA: {e}")
+    app.logger.error(f"Erro PJSUA: {e}")
 finally:
     ep.libDestroy()  # Garanta que a biblioteca é destruída no final
     log_file.close()  # Fechar o arquivo de log

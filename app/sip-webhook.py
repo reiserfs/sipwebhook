@@ -12,7 +12,6 @@ import datetime
 
 # Configuração do Flask
 app = Flask(__name__)
-app.config['DEBUG'] = True
 swagger_config = {
     "swagger": "2.0",
     "info": {
@@ -56,7 +55,7 @@ queue_time = config['queue']['time']
 message_queue = queue.Queue()
 
 # Tempo para a próxima verificação de chamadas em segundos
-check_interval = queue_time
+check_interval = int(queue_time)
 last_call_time = None  # Inicializa a variável como None
 
 def gerar_audio_tts(texto):
@@ -89,12 +88,15 @@ def process_call_queue():
                     stderr=subprocess.PIPE
                 )
                 print(f"Comando de chamada iniciado para {destination_number}")
+                app.logger.info(f"Comando de chamada iniciado para {destination_number}")
             except Exception as e:
                 print(f"Erro ao iniciar o script de chamada: {e}")
+                app.logger.error(f"Erro ao iniciar o script de chamada: {e}")
 
             # Limpar a fila
             os.remove(audio_file)
             print("Fila processada e áudio removido.")
+            app.logger.info("Fila processada e áudio removido.")
 
         time.sleep(check_interval)
 
@@ -190,3 +192,6 @@ call_thread.start()
 # Iniciar o servidor Flask
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)    
