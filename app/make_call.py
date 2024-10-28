@@ -8,19 +8,22 @@ log_file = open("call-debug.log", "a")
 sys.stdout = log_file
 sys.stderr = log_file
 
-if len(sys.argv) != 6:
-    print("Uso: python3 make_call.py <server_uri> <username> <password> <destination_number> <audio_file>")
+if len(sys.argv) != 7:
+    print("Uso: python3 make_call.py <server_uri> <username> <password> <destination_number> <host_ip> <audio_file>")
     sys.exit(1)
 
 server_uri = sys.argv[1]
 username = sys.argv[2]
 password = sys.argv[3]
 destination_number = sys.argv[4]
-audio_file = sys.argv[5]
+host_ip = sys.argv[5]
+audio_file = sys.argv[6]
+
+
 
 class MinhaConta(pj.Account):
     def onRegState(self, prm):
-        app.logger.info("*** Estado de registro: " + prm.reason)
+        print("*** Estado de registro: " + prm.reason)
 
 class MinhaChamada(pj.Call):
     def __init__(self, conta, audio_file):
@@ -30,15 +33,15 @@ class MinhaChamada(pj.Call):
 
     def onCallState(self, prm):
         ci = self.getInfo()
-        app.logger.info(f"*** Estado da chamada: {ci.stateText} ({ci.lastReason})")
+        print(f"*** Estado da chamada: {ci.stateText} ({ci.lastReason})")
         if ci.state == pj.PJSIP_INV_STATE_DISCONNECTED:
-            app.logger.info("*** Chamada desconectada")
+            print("*** Chamada desconectada")
 
     def onCallMediaState(self, prm):
         ci = self.getInfo()
 
         if ci.state == pj.PJSIP_INV_STATE_CONFIRMED:
-            app.logger.info("*** Mídia de chamada ativa, iniciando reprodução do áudio")
+            print("*** Mídia de chamada ativa, iniciando reprodução do áudio")
             try:
                 self.player = pj.AudioMediaPlayer()
                 self.player.createPlayer(self.audio_file, pj.PJMEDIA_FILE_NO_LOOP)
@@ -47,7 +50,7 @@ class MinhaChamada(pj.Call):
                 # Transmitir áudio do player para a chamada
                 self.player.startTransmit(call_media)
             except pj.Error as e:
-                app.logger.error(f"Erro ao transmitir áudio: {e}")
+                print(f"Erro ao transmitir áudio: {e}")
 
 ep = pj.Endpoint()
 try:
@@ -62,6 +65,7 @@ try:
     # Criar o transporte SIP
     sip_tp_cfg = pj.TransportConfig()
     sip_tp_cfg.port = 5060
+    sip_tp_cfg.boundAddress = host_ip
     ep.transportCreate(pj.PJSIP_TRANSPORT_UDP, sip_tp_cfg)
 
     # Iniciar a biblioteca
@@ -90,7 +94,7 @@ try:
 
     os.remove(audio_file)
 except pj.Error as e:
-    app.logger.error(f"Erro PJSUA: {e}")
+    print(f"Erro PJSUA: {e}")
 finally:
     ep.libDestroy()  # Garanta que a biblioteca é destruída no final
     log_file.close()  # Fechar o arquivo de log

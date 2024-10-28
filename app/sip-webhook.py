@@ -56,6 +56,7 @@ server_uri = config['sip']['server_uri']
 username = config['sip']['username']
 password = config['sip']['password']
 destination_number = config['sip']['destination_number']
+host_ip = config['sip']['host_ip']
 queue_time = config['queue']['time']
 
 # Fila de mensagens
@@ -95,7 +96,7 @@ def process_call_queue():
                     app.logger.error("O arquivo make_call.py não foi encontrado.")           
                 # Tentar iniciar o processo
                 process = subprocess.Popen(
-                    ["python3", "make_call.py", server_uri, username, password, destination_number, audio_file],
+                    ["python3", "make_call.py", server_uri, username, password, destination_number, host_ip, audio_file],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE
                 )
