@@ -65,6 +65,7 @@ try:
     # Criar o transporte SIP
     sip_tp_cfg = pj.TransportConfig()
     sip_tp_cfg.port = 5060
+    sip_tp_cfg.publicAddress = host_ip
     ep.transportCreate(pj.PJSIP_TRANSPORT_UDP, sip_tp_cfg)
 
     # Iniciar a biblioteca
