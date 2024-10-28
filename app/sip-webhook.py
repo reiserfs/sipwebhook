@@ -13,6 +13,12 @@ import logging
 
 # Configuração do Flask
 app = Flask(__name__)
+
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
 swagger_config = {
     "swagger": "2.0",
     "info": {
@@ -167,6 +173,7 @@ def status():
     """    
     token = request.headers.get("Authorization")
     if token not in config['auth'].values():
+        app.logger.info('status - "Token inválido"')  
         return jsonify({"error": "Token inválido"}), 401
 
     queue_size = message_queue.qsize()
@@ -175,7 +182,7 @@ def status():
         if last_call_time
         else "Nenhuma ligação feita"
     )
-
+    app.logger.info('status - return')  
     return jsonify(
         {
             "queue_size": queue_size,
@@ -191,12 +198,4 @@ call_thread.start()
 
 # Iniciar o servidor Flask
 if __name__ == '__main__':
-    gunicorn_logger = logging.getLogger('gunicorn.error')
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
-    app.logger.debug('this is a DEBUG message')
-    app.logger.info('this is an INFO message')
-    app.logger.warning('this is a WARNING message')
-    app.logger.error('this is an ERROR message')
-    app.logger.critical('this is a CRITICAL message')    
     app.run(host='0.0.0.0', port=5000)
