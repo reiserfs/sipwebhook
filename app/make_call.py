@@ -65,7 +65,6 @@ try:
     # Criar o transporte SIP
     sip_tp_cfg = pj.TransportConfig()
     sip_tp_cfg.port = 5060
-    sip_tp_cfg.boundAddress = host_ip
     ep.transportCreate(pj.PJSIP_TRANSPORT_UDP, sip_tp_cfg)
 
     # Iniciar a biblioteca
@@ -75,6 +74,7 @@ try:
     acfg = pj.AccountConfig()
     acfg.idUri = f"sip:{username}@{server_uri}"
     acfg.regConfig.registrarUri = f"sip:{server_uri}"
+    acfg.sipConfig.contactUri = f"sip:{username}@{host_ip}" 
     cred = pj.AuthCredInfo("digest", "*", username, 0, password)
 
     acfg.sipConfig.authCreds.append(cred)
