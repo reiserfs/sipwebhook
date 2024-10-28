@@ -15,7 +15,8 @@ RUN apk update && \
 	    pjproject \
         py3-virtualenv \
         gettext \
-        espeak-ng
+        espeak-ng \
+        ffmpeg
 
 # Criar um diretório para a aplicação
 RUN mkdir -p /home/webhook/app
