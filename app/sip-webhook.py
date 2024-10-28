@@ -88,15 +88,12 @@ def process_call_queue():
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE
                 )
-                print(f"Comando de chamada iniciado para {destination_number}")
                 app.logger.info(f"Comando de chamada iniciado para {destination_number}")
             except Exception as e:
-                print(f"Erro ao iniciar o script de chamada: {e}")
                 app.logger.error(f"Erro ao iniciar o script de chamada: {e}")
 
             # Limpar a fila
             os.remove(audio_file)
-            print("Fila processada e áudio removido.")
             app.logger.info("Fila processada e áudio removido.")
 
         time.sleep(check_interval)
