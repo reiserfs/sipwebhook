@@ -36,4 +36,4 @@ nginx
 source /home/webhook/app/venv/bin/activate
 
 # Executar o aplicativo Python
-cd /home/webhook/app/ && gunicorn --log-level debug --capture-output --enable-stdio-inheritance -w 4 -b 0.0.0.0:5000 sip-webhook:app
+cd /home/webhook/app/ && gunicorn --log-level=warning --capture-output --enable-stdio-inheritance -w 4 -b 0.0.0.0:5000 sip-webhook:app
