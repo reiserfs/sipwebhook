@@ -50,12 +50,13 @@ server_uri = config['sip']['server_uri']
 username = config['sip']['username']
 password = config['sip']['password']
 destination_number = config['sip']['destination_number']
+queue_time = config['queue']['time']
 
 # Fila de mensagens
 message_queue = queue.Queue()
 
 # Tempo para a próxima verificação de chamadas em segundos
-check_interval = 5
+check_interval = queue_time
 last_call_time = None  # Inicializa a variável como None
 
 def gerar_audio_tts(texto):
