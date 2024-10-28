@@ -73,6 +73,7 @@ def gerar_audio_tts(texto):
         engine.setProperty('volume', 1.0)        
         engine.save_to_file(texto, temp_file.name)
         engine.runAndWait()
+        app.logger.info(f"Audio criado em: {temp_file.name}")
         return temp_file.name
 
 # Função para verificar e fazer ligações a cada minuto
