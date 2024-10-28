@@ -89,12 +89,26 @@ def process_call_queue():
 
             # Executar o script para fazer a chamada
             try:
-                subprocess.Popen(
+                # Verifique se o arquivo make_call.py existe e é executável
+                if not os.path.isfile("make_call.py"):
+                    app.logger.error("O arquivo make_call.py não foi encontrado.")           
+                # Tentar iniciar o processo
+                process = subprocess.Popen(
                     ["python3", "make_call.py", server_uri, username, password, destination_number, audio_file],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE
                 )
+                # Capturar stdout e stderr
+                stdout, stderr = process.communicate()
+
+                # Registrar a saída no logger
+                if stdout:
+                    app.logger.info(f"Saída do comando: {stdout.decode().strip()}")
+                if stderr:
+                    app.logger.error(f"Erro do comando: {stderr.decode().strip()}")                
                 app.logger.info(f"Comando de chamada iniciado para {destination_number}")
+            except FileNotFoundError as e:
+                app.logger.error(f"O arquivo make_call.py não foi encontrado: {e}")
             except Exception as e:
                 app.logger.error(f"Erro ao iniciar o script de chamada: {e}")
 
