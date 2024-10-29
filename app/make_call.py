@@ -1,101 +1,126 @@
 import sys
 import pjsua2 as pj
-import os
+import logging
 import time
+from libs import call
+from libs import account
+from libs import endpoint
 
-# Redirecionar a saída para o arquivo call-debug.log
-log_file = open("call-debug.log", "a")
-sys.stdout = log_file
-sys.stderr = log_file
+# Classe adaptadora para compatibilizar o logger do Python com o log do pjsua2.
+class LogWriterAdapter(pj.LogWriter):
+    """
+    Logger to receive log messages from pjsua2
+    """
+    def __init__(self):
+        logging.basicConfig(filename="app.log", level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+        self.logger = logging.getLogger()
+        pj.LogWriter.__init__(self)
 
-if len(sys.argv) != 7:
-    print("Uso: python3 make_call.py <server_uri> <username> <password> <destination_number> <host_ip> <audio_file>")
-    sys.exit(1)
+    # Método correto para capturar o log do pjsua2.
+    def write(self, entry, level=None):
+        self.logger.info(entry.msg)
 
-server_uri = sys.argv[1]
-username = sys.argv[2]
-password = sys.argv[3]
-destination_number = sys.argv[4]
-host_ip = sys.argv[5]
-audio_file = sys.argv[6]
+class ApplicationCLI:
+    def __init__(self):
+        # Cria o adaptador de log e configurações de log do endpoint.
+        self.log_writer = LogWriterAdapter()
+        
+        # Inicializa o endpoint.
+        self.ep = endpoint.Endpoint()
+        self.ep.libCreate()
+
+        # Configurações iniciais.
+        self.epConfig = pj.EpConfig()        
+        #self.epConfig.logConfig.writer = self.log_writer
+        self.epConfig.logConfig.level = 5
+        self.epConfig.logConfig.consoleLevel = 5
+
+        # Criação de contas e lista de destinatários.
+        self.accounts = []
+        self.buddy = None
+
+    def start(self):
+        # Inicializa a biblioteca.
+        self.ep.libInit(self.epConfig)
+        # Configurar dispositivo de áudio
+        self.ep.audDevManager().setNullDev()
+        # Configuração dos transportes.
+        transportConfig = pj.TransportConfig()
+        self.ep.transportCreate(pj.PJSIP_TRANSPORT_UDP, transportConfig)
+
+        self.ep.libStart()
+        self.log_writer.logger.info("Sistema iniciado. Aguardando comandos.")
+
+    def add_account(self, username, password, domain, buddy_uri):
+        # Cria e registra uma nova conta.
+        acc_cfg = pj.AccountConfig()
+        acc_cfg.idUri = f"sip:{username}@{domain}"
+        
+        # Configuração de Registro
+        reg_cfg = acc_cfg.regConfig
+        reg_cfg.registrarUri =  f"sip:{domain}" 
+        
+        # Configuração SIP
+        sip_cfg = acc_cfg.sipConfig
+        sip_cfg.authCreds.append(pj.AuthCredInfo("digest", "*", username, 0, password))
 
 
+        self.log_writer.logger.info(f"Conta idUri: {acc_cfg.idUri}")
+        self.log_writer.logger.info(f"Conta registrarUri: {acc_cfg.regConfig.registrarUri}")
+        acc = account.Account(self)
+        acc.create(acc_cfg)
+        self.accounts.append(acc)
 
-class MinhaConta(pj.Account):
-    def onRegState(self, prm):
-        print("*** Estado de registro: " + prm.reason)
+        self.log_writer.logger.info(f"Conta adicionada: {username}@{domain}")
+        #return acc
+        time.sleep(10)
+        if acc.isRegistered():  # Método fictício, verifique a implementação real
+            self.log_writer.logger.info("Registro bem-sucedido.")
+            return True
+        else:
+            self.log_writer.logger.error("Erro: Falha no registro.")
+            print("Erro: Falha no registro.")
+            return False        
 
-class MinhaChamada(pj.Call):
-    def __init__(self, conta, audio_file):
-        super().__init__(conta)
-        self.audio_file = audio_file
-        self.player = None
+    def make_call(self, buddy_uri, wav_file):
+        # Realiza uma ligação para o destinatário especificado.
+        if not self.accounts:
+            self.log_writer.logger.error("Erro: Nenhuma conta configurada.")
+            print("Erro: Nenhuma conta configurada.")
+            return
+        newcall = call.Call(self.accounts[0], wav_file)  # Usa a primeira conta para a chamada
+        call_param = pj.CallOpParam() 
+        try:
+            newcall.makeCall(buddy_uri,call_param)
+            self.log_writer.logger.info(f"Ligação em andamento para: {buddy_uri}")
+            time.sleep(40)
+        except:
+            self.log_writer.logger.error(f"Erro ao ligar para: {buddy_uri}")            
+               
+        #print(f"Ligação em andamento para: {buddy_uri}")
 
-    def onCallState(self, prm):
-        ci = self.getInfo()
-        print(f"*** Estado da chamada: {ci.stateText} ({ci.lastReason})")
-        if ci.state == pj.PJSIP_INV_STATE_DISCONNECTED:
-            print("*** Chamada desconectada")
+    def stop(self):
+        # Finaliza a biblioteca e o aplicativo.
+        self.ep.libDestroy()
+        
+        self.log_writer.logger.info("Sistema finalizado.")
+        print("Sistema finalizado.")
 
-    def onCallMediaState(self, prm):
-        ci = self.getInfo()
+def main(args):
+    app = ApplicationCLI()
+    app.start()
 
-        if ci.state == pj.PJSIP_INV_STATE_CONFIRMED:
-            print("*** Mídia de chamada ativa, iniciando reprodução do áudio")
-            try:
-                self.player = pj.AudioMediaPlayer()
-                self.player.createPlayer(self.audio_file, pj.PJMEDIA_FILE_NO_LOOP)
-                call_media = self.getAudioMedia(-1)
 
-                # Transmitir áudio do player para a chamada
-                self.player.startTransmit(call_media)
-            except pj.Error as e:
-                print(f"Erro ao transmitir áudio: {e}")
+    if len(args) != 6:
+        print(f"Uso: python3 make_call.py <username> <password> <domain> <buddy_uri> <arquivo.wav> {len(args)}")
+        return
+    
+    else:
+        username, password, domain, buddy_uri, wav_file = args[1], args[2], args[3], args[4], args[5]
+        #app = ApplicationCLI(username, password, domain, buddy_uri, wav_file)
+        
+    if app.add_account(username, password, domain, buddy_uri):       
+        app.make_call(buddy_uri, wav_file)     
 
-ep = pj.Endpoint()
-try:
-    # Configurar e fazer a ligação
-    ep_cfg = pj.EpConfig()
-    ep.libCreate()
-    ep.libInit(ep_cfg)
-
-    # Configurar dispositivo de áudio
-    ep.audDevManager().setNullDev()
-
-    # Criar o transporte SIP
-    sip_tp_cfg = pj.TransportConfig()
-    sip_tp_cfg.port = 5060
-    sip_tp_cfg.publicAddress = host_ip
-    ep.transportCreate(pj.PJSIP_TRANSPORT_UDP, sip_tp_cfg)
-
-    # Iniciar a biblioteca
-    ep.libStart()
-
-    # Configuração da conta SIP
-    acfg = pj.AccountConfig()
-    acfg.idUri = f"sip:{username}@{server_uri}"
-    acfg.regConfig.registrarUri = f"sip:{server_uri}"
-    acfg.sipConfig.contactUri = f"sip:{username}@{host_ip}" 
-    cred = pj.AuthCredInfo("digest", "*", username, 0, password)
-
-    acfg.sipConfig.authCreds.append(cred)
-    conta = MinhaConta()
-    conta.create(acfg)
-
-    # Configurar a chamada
-    chamada = MinhaChamada(conta, audio_file)
-    call_prm = pj.CallOpParam()
-    chamada.makeCall(f"sip:{destination_number}@{server_uri}", call_prm)
-
-    # Manter a biblioteca ativa durante a chamada
-    time.sleep(30)  # Mantenha o tempo necessário para a chamada
-    # Verifique o estado da chamada antes de destruí-la
-    if chamada.getInfo().state != pj.PJSIP_INV_STATE_DISCONNECTED:
-        chamada.hangup()  # Encerre a chamada se ainda estiver ativa
-
-    os.remove(audio_file)
-except pj.Error as e:
-    print(f"Erro PJSUA: {e}")
-finally:
-    ep.libDestroy()  # Garanta que a biblioteca é destruída no final
-    log_file.close()  # Fechar o arquivo de log
+if __name__ == "__main__":
+    main(sys.argv)
