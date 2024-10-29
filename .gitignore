@@ -1,5 +1,5 @@
 app/__pycache__
-libs/__pycache__
+app/libs/__pycache__
 oldlibs
 call-debug.log
 *.log
