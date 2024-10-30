@@ -1,5 +1,7 @@
 app/__pycache__
 app/libs/__pycache__
+app/*.json
 oldlibs
 call-debug.log
 *.log
+*.json
