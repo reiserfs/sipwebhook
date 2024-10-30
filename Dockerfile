@@ -5,9 +5,6 @@ FROM alpine:latest
 RUN apk update && \
     apk add --no-cache \
         nginx \
-        openssl \
-        certbot \
-        certbot-nginx \
         python3 \
         py3-pip \
         bash \

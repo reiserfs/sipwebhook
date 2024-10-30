@@ -1,0 +1,42 @@
+{
+"accounts":             [ 
+    { 
+       "enabled":              true,
+       "AccountConfig":        { 
+          "priority":             0,
+          "idUri":                "sip:thiagomelo@sip.linphone.org",
+          "AccountRegConfig":     { 
+             "registrarUri":         "sip:sip.linphone.org",
+             "registerOnAdd":        true,
+             "timeoutSec":           300,
+             "retryIntervalSec":     300,
+             "firstRetryIntervalSec": 0,
+             "randomRetryIntervalSec": 10,
+             "delayBeforeRefreshSec": 5,
+             "dropCallsOnFail":      false
+          },
+          "AccountSipConfig":     { 
+             "authCreds":            [ 
+                { 
+                   "scheme":               "digest",
+                   "realm":                "*",
+                   "username":             "thiagomelo",
+                   "dataType":             0,
+                   "data":                 "123mudar"
+                }
+             ]
+          }
+       },
+       "buddies":              [ 
+          { 
+             "uri":                  "sip:thiago7graus@sip.linphone.org",
+             "priority": 1
+          },
+          { 
+             "uri":                  "sip:outro@sip.linphone.org",
+             "priority": 2
+          }
+       ]
+    }
+ ]
+} 
