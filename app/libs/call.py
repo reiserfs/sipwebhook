@@ -9,19 +9,13 @@ class Call(pj.Call):
     """
     Objeto de chamada simplificado, derivado do objeto Call do pjsua2.
     """
-    # def __init__(self, acc, audio_file, call_id=pj.PJSUA_INVALID_ID):
-    #     pj.Call.__init__(self, acc, call_id)
-    #     self.acc = acc
-    #     self.audio_file = audio_file
-    #     self.player = None
     def __init__(self, acc, audio_file):
         super().__init__(acc)
         self.audio_file = audio_file
         self.player = None            
 
     def onCallState(self, prm):
-        ci = self.getInfo()
-        #self.connected = ci.state == pj.PJSIP_INV_STATE_CONFIRMED
+        ci = self.getInfo()        
         logging.info("Estado da chamada atualizado: %s", ci.stateText)
         if ci.state == pj.PJSIP_INV_STATE_CONFIRMED:
             logging.info("*** Mídia de chamada ativa, iniciando reprodução do áudio")
@@ -33,8 +27,6 @@ class Call(pj.Call):
                 # Transmitir áudio do player para a chamada
                 self.player.startTransmit(call_media)
             except pj.Error as e:
-                print(f"Erro ao transmitir áudio: {e}") 
-        if ci.state == pj.PJSIP_INV_STATE_EARLY:    
-            self.connected = pj.PJSIP_INV_STATE_CONFIRMED           
+                print(f"Erro ao transmitir áudio: {e}")          
         if ci.state == pj.PJSIP_INV_STATE_DISCONNECTED:
             logging.info("*** Chamada desconectada")        
