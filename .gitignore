@@ -5,3 +5,4 @@ oldlibs
 call-debug.log
 *.log
 *.json
+__pycache__
