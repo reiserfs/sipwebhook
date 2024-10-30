@@ -82,7 +82,7 @@ def receive_message(token, message_text):
     token_key = next((key for key, value in config['auth'].items() if value == token), None)
 
     # Carregar dados existentes do JSON, se houver
-    if os.path.exists("messages.json"):
+    if (os.path.exists("messages.json") and os.path.getsize("messages.json") > 0):
         with open("messages.json", "r") as f:
             all_messages = json.load(f)
     else:
