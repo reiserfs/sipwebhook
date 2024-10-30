@@ -75,8 +75,11 @@ makeaccounts > /home/webhook/app/accounts.json
 # Iniciar Nginx
 nginx
 
+# Executar o make call
+cd /home/webhook/app/ && python make_call.py&
+
 # Ativar o ambiente virtual
 source /home/webhook/app/venv/bin/activate
 
-# Executar o aplicativo Python
-cd /home/webhook/app/ && python make_call.py && gunicorn --log-level=debug --capture-output --enable-stdio-inheritance -w 4 -b 0.0.0.0:5000 sip-webhook:app
+# Executar o aplicativo principal
+cd /home/webhook/app/ && gunicorn --log-level=debug --capture-output --enable-stdio-inheritance -w 4 -b 0.0.0.0:5000 sip-webhook:app

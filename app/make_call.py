@@ -3,6 +3,7 @@ import pjsua2 as pj
 import logging
 import time
 import json
+import os
 from datetime import datetime
 from libs import call
 from libs import account
@@ -78,6 +79,8 @@ class ApplicationCLI:
             self.log_writer.logger.error("Erro: Falha no registro.")
 
     def read_messages(self, filename):
+        if os.path.getsize(filename) == 0:
+            return [] 
         with open(filename, 'r') as f:
             return json.load(f)
 
@@ -91,27 +94,27 @@ class ApplicationCLI:
     def make_calls(self, buddies):
         while True:
             messages = self.read_messages('messages.json')
-            for index, message in enumerate(messages):  # Itera diretamente sobre a lista de mensagens
+            for index, message in enumerate(messages):  
                 if message["status"] == "received":
                     for buddy in sorted(buddies, key=lambda b: b.get("priority", 0)):
                         buddy_uri = buddy["uri"]
                         audio_file = message.get("temp_wav_location")
                         self.log_writer.logger.info(f"Fazendo chamada para {buddy_uri} com arquivo {audio_file}")
-                        self.make_call(buddy_uri, audio_file, messages, index)  # Passa a mensagem e o índice
-                        break  # Para de ligar assim que fizer a primeira chamada
-                time.sleep(5)  # Aguarda 5 segundos antes de verificar novamente
+                        self.make_call(buddy_uri, audio_file, messages, index) 
+                        break 
+                time.sleep(25)
 
     def make_call(self, buddy_uri, wav_file, messages, index):
         if not self.accounts:
             self.log_writer.logger.error("Erro: Nenhuma conta configurada.")
             return
 
-        newcall = call.Call(self.accounts[0], wav_file)  # Usa a primeira conta para a chamada
+        newcall = call.Call(self.accounts[0], wav_file) 
         call_param = pj.CallOpParam() 
         try:
             newcall.makeCall(buddy_uri, call_param)
             self.log_writer.logger.info(f"Ligação em andamento para: {buddy_uri}")
-            time.sleep(10)  # Aguardar 10 segundos para a chamada
+            time.sleep(20)
 
             # Obter informações do estado da chamada
             call_info = newcall.getInfo()
